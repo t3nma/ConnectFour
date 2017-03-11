@@ -7,17 +7,12 @@ State::State(int nRows, int nCols)
       board(new Column[c])
 {
     for(int i=0; i<c; ++i)
-	board[i].set(r);
+	board[i].init(r);
 }
 
 State::State(int **state, int nRows, int nCols)
-    : r(nRows),
-      c(nCols),
-      board(new Column[c])
+    : State(nRows,nCols)
 {
-    for(int i=0; i<c; ++i)
-	board[i].set(r);
-
     for(int i=0; i<r; ++i)
 	for(int j=0; j<c; ++j)
 	    board[j].placeCell( state[r-1-i][j] );

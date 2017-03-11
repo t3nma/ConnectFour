@@ -5,7 +5,7 @@ Column::Column()
 {
 }
 
-void Column::set(int r)
+void Column::init(int r)
 {
     this->r = r;
     top = 0;

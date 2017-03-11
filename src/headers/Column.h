@@ -6,7 +6,7 @@ class Column
 public:
 
     Column();
-    void set(int r);
+    void init(int r);
     Column(const Column& c);
     Column& operator=(const Column& c);
     ~Column();
