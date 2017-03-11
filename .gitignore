@@ -1,4 +1,5 @@
-ConnectFour
-*.~
-*.o
+*~
 *.out
+*#
+*.o
+ConnectFour
