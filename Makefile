@@ -1,14 +1,21 @@
-ConnectFour: obj/main.o obj/State.o obj/Column.o
-	g++ -std=c++11 -o ConnectFour obj/main.o obj/State.o obj/Column.o -Wall
+CPPC=g++
+CPPFLAGS=-Wall -std=c++11
 
-obj/main.o: src/main.cpp src/State.cpp src/Column.cpp src/headers/State.h src/headers/Column.h
-	g++ -std=c++11 -o obj/main.o -c src/main.cpp -Wall
+ODIR=obj
+SDIR=src
+DEPS=$(SDIR)/headers
 
-obj/State.o: src/State.cpp src/Column.cpp src/headers/State.h src/headers/Column.h
-	g++ -std=c++11 -o obj/State.o -c src/State.cpp -Wall
+ConnectFour: $(ODIR)/main.o $(ODIR)/State.o $(ODIR)/Column.o
+	$(CPPC) $(CPPFLAGS) -o ConnectFour $(ODIR)/main.o $(ODIR)/State.o $(ODIR)/Column.o
 
-obj/Column.o: src/Column.cpp src/headers/Column.h
-	g++ -std=c++11 -o obj/Column.o -c src/Column.cpp -Wall
+$(ODIR)/main.o: $(SDIR)/main.cpp $(SDIR)/State.cpp $(SDIR)/Column.cpp $(DEPS)/State.h $(DEPS)/Column.h
+	$(CPPC) $(CPPFLAGS) -o $(ODIR)/main.o -c $(SDIR)/main.cpp
+
+$(ODIR)/State.o: $(SDIR)/State.cpp $(SDIR)/Column.cpp $(DEPS)/State.h $(DEPS)/Column.h
+	$(CPPC) $(CPPFLAGS) -o $(ODIR)/State.o -c $(SDIR)/State.cpp
+
+$(ODIR)/Column.o: $(SDIR)/Column.cpp $(DEPS)/Column.h
+	$(CPPC) $(CPPFLAGS) -o $(ODIR)/Column.o -c $(SDIR)/Column.cpp
 
 clean:
-	rm -f ConnectFour src/*~ obj/*.o src/*\#
+	rm -f ConnectFour $(SDIR)/*~ $(ODIR)/*.o $(SDIR)/*\#
