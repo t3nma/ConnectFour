@@ -1,10 +1,11 @@
 #include <iostream>
 #include "headers/State.h"
 
-State::State(int nRows, int nCols)
+State::State(int nRows, int nCols, int move)
     : r(nRows),
       c(nCols),
-      board(new Column[c])
+      board(new Column[c]),
+      move(move)
 {
     for(int i=0; i<c; ++i)
 	board[i].init(r);
@@ -12,7 +13,8 @@ State::State(int nRows, int nCols)
 
 State::State(const State& s)
     : r(s.r),
-      c(s.c)
+      c(s.c),
+      move(s.move)
 {
     board = new Column[c];
     for(int i=0; i<c; ++i)
@@ -23,6 +25,7 @@ State& State::operator=(const State& s)
 {
     r = s.r;
     c = s.c;
+    move = s.move;
     
     if(board != NULL)
 	delete [] board;
@@ -38,6 +41,16 @@ State::~State()
 {
     if(board != NULL)
 	delete [] board;
+}
+
+int State::getMove() const
+{
+    return move;
+}
+
+void State::setMove(int move)
+{
+    this->move = move;
 }
 
 bool State::play(int player, int column)
@@ -61,6 +74,7 @@ vector<State*> State::makeDescendants(int player) const
 	if(!s->board[i].isFull())
 	{
 	    s->board[i].placeCell(player);
+	    s->setMove(i);
 	    changed = true;
 	}
 

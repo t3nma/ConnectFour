@@ -23,9 +23,9 @@ int AI::alphaBeta(State *state) const
 
 NODE AI::maxValue(State *state, int depth) const
 {
-    NODE result(-1,-1); // (utility,move)
-
-    if( (result.first = state->isTerminal()) != -1)
+    NODE result(-1,state->getMove()); // (utility,move)
+    
+    if( (result.first = state->isTerminal()) != 0)
 	return result;
     else if(depth == depthBound)
     {
@@ -42,7 +42,7 @@ NODE AI::maxValue(State *state, int depth) const
 	if(tmp.first > result.first)
 	{
 	    result.first = tmp.first;
-	    //result.second = (*it)->getParentMove();
+	    result.second = (*it)->getMove();
 	}
     }
 
@@ -51,7 +51,7 @@ NODE AI::maxValue(State *state, int depth) const
 
 NODE AI::minValue(State *state, int depth) const
 {
-    NODE result(-1,-1); // (utility,move)
+    NODE result(-1,state->getMove()); // (utility,move)
 
     if( (result.first = state->isTerminal()) != 0 )
 	return result;
@@ -70,7 +70,7 @@ NODE AI::minValue(State *state, int depth) const
 	if(tmp.first < result.first)
 	{
 	    result.first = tmp.first;
-	    //result.second = (*it)->getParentMove();
+	    result.second = (*it)->getMove();
 	}
     }
 

@@ -11,6 +11,7 @@
 #include <utility>
 #include <algorithm>
 #include <climits>
+#include <iostream>
 
 class AI
 {

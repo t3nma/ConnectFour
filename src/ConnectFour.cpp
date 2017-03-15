@@ -75,12 +75,13 @@ void ConnectFour::humanTurn()
 
 void ConnectFour::botTurn()
 {
-    /*
     cout << "AI turn." << endl;
-    state->play(curPlayer, bot->play(state));
+    int RESULT = bot->play(state);
+    cout << "RESULT FROM MINMAX: " << RESULT << endl;
+    state->play(curPlayer, RESULT);
     curPlayer = 1;
-    */
 
+    /*
     cout << "AI turn." << endl;
 
     cout << "Column: ";
@@ -93,4 +94,5 @@ void ConnectFour::botTurn()
     }
 
     curPlayer = 1;
+    */
 }
