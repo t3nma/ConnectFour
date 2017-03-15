@@ -19,7 +19,7 @@ private:
     int curPlayer;
 
     void humanTurn();
-    void AITurn(bool minmax = true);
+    void botTurn();
 };
 
 #endif

@@ -16,20 +16,23 @@ public:
 
     bool play(int player, int column);
     vector<State*> makeDescendants(int player) const;
-    bool isTerminal() const;
+    int isTerminal() const;
+    int eval() const;
     void print() const;
+
+    // TODO << SUPPORT
     
 private:
     int r;
     int c;
     Column *board;
 
-    bool hasWinner() const;
-    bool isFull() const;
-    bool checkRows() const;
-    bool checkColumns() const;
-    bool checkDiagonals() const;
-    bool runDiagonal(int x, int y, int dirX, int dirY) const;
+    int hasWinner() const;
+    int isFull() const;
+    int checkRows() const;
+    int checkColumns() const;
+    int checkDiagonals() const;
+    int runDiagonal(int x, int y, int dirX, int dirY) const;
 };
 
 #endif

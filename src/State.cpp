@@ -71,9 +71,18 @@ vector<State*> State::makeDescendants(int player) const
     return descendants;
 }
 
-bool State::isTerminal() const
+int State::isTerminal() const
 {
-    return ( hasWinner() || isFull() );
+    int winner;
+    if((winner = hasWinner()) != 0)
+	return winner;
+    
+    return isFull();
+}
+
+int State::eval() const
+{
+    return 0;
 }
 
 void State::print() const
@@ -87,21 +96,32 @@ void State::print() const
     }
 }
 
-bool State::hasWinner() const
+int State::hasWinner() const
 {
-    return ( checkRows() || checkColumns() || checkDiagonals() );
+    int value;
+    
+    if( (value = checkRows()) != 0)
+	return value;
+
+    if( (value = checkColumns()) != 0)
+	return value;
+
+    if( (value = checkDiagonals()) != 0)
+	return value;
+    
+    return 0;
 }
 
-bool State::isFull() const
+int State::isFull() const
 {
     for(int i=0; i<c; ++i)
 	if(!board[i].isFull())
-	    return false;
+	    return 0;
 
-    return true;
+    return 1;
 }
 
-bool State::checkRows() const
+int State::checkRows() const
 {
     for(int i=0; i<r; ++i)
     {
@@ -118,15 +138,15 @@ bool State::checkRows() const
 		    human=0; pc=0;
 	    }
 
-	    if(human == 4 || pc == 4)
-		return true;
+	    if (human == 4) return -512;
+	    if (pc == 4)    return 512;
 	}
     }
     
-    return false;
+    return 0;
 }
 
-bool State::checkColumns() const
+int State::checkColumns() const
 {
     for(int j=0; j<c; ++j)
     {
@@ -140,40 +160,42 @@ bool State::checkColumns() const
 	        default: human=0; pc=0;
 	    }
 
-	    if(human == 4 || pc == 4)
-		return true;
+	    if (human == 4) return -512;
+	    if (pc == 4)    return 512;
 	}
     }
 
-    return false;
+    return 0;
 }
 
-bool State::checkDiagonals() const
+int State::checkDiagonals() const
 {
+    int value;
+    
     // top-left to top-right
     for(int j=0; j<c && (c-j >= 4); ++j)
-	if( runDiagonal(0,j,1,1) )
-	    return true;
+	if( (value = runDiagonal(0,j,1,1)) != 0 )
+	    return value;
     
     // top-left to bottom-left
     for(int i=1; i<r && (r-i >= 4); ++i)
-	if( runDiagonal(i,0,1,1) )
-	    return true;
+	if( (value = runDiagonal(i,0,1,1)) != 0 )
+	    return value;
 
     // bottom-left to top-left
     for(int i=r-1; i>=0 && (i+1 >= 4); --i)
-	if( runDiagonal(i,0,-1,1) )
-	    return true;
+	if( (value = runDiagonal(i,0,-1,1)) != 0 )
+	    return value;
     
     // bottom-left to bottom-right
     for(int j=1; j<c && (c-j >= 4); ++j)
-	if( runDiagonal(r-1,j,-1,1) )
-	    return true;
+	if( (value = runDiagonal(r-1,j,-1,1)) != 0 )
+	    return value;
     
-    return false;
+    return 0;
 }
 
-bool State::runDiagonal(int x, int y, int dirX, int dirY) const
+int State::runDiagonal(int x, int y, int dirX, int dirY) const
 {
     int human=0, pc=0;
     while(x>=0 && x<r && y>=0 && y<c)
@@ -185,12 +207,12 @@ bool State::runDiagonal(int x, int y, int dirX, int dirY) const
 	    default: human=0; pc=0;
 	}
 
-	if(human == 4 || pc == 4)
-	    return true;
-	
+	if (human == 4) return -512;
+	if (pc == 4)    return 512;
+
 	x+=dirX;
 	y+=dirY;
     }
 
-    return false;
+    return 0;
 }

@@ -24,36 +24,34 @@ ConnectFour::~ConnectFour()
 void ConnectFour::init()
 {
     int nRows;
-    cout << "Rows: ";
+    cout << "Number of Rows: ";
     cin >> nRows;
 
     int nCols;
-    cout << "Columns: ";
+    cout << "Number of Columns: ";
     cin >> nCols;
 
-    int depth = 12;
-    cout << "Depth Bound: (default = 12)";
-    cin >> depth;
+    int op;
+    cout << "Algorithm:\n1 - Minmax\n2 - Alpha Beta\n" << endl;
+    cin >> op;
     
     state = new State(nRows,nCols);
-    bot = new AI(depth);
-    curPlayer = 1; // human
+    bot = new AI( (op == 1 ? true : false), 12);
+    curPlayer = 1 + rand()%2; // random start player
 }
 
 void ConnectFour::start()
 {
     state->print();
-    cout << endl;
 
-    while(!state->isTerminal())
+    while(state->isTerminal() == 0)
     {
 	if(curPlayer == 1)
 	    humanTurn();
 	else
-	    AITurn();
+	    botTurn();
 
 	state->print();
-	cout << endl;
     }
 
     cout << "GAME ENDED!" << endl;
@@ -63,28 +61,36 @@ void ConnectFour::humanTurn()
 {
     cout << "Your turn." << endl;
 
-    int col;
-    cout << "Column: "; cin >> col;
-    while( !state->play(curPlayer, col) )
+    cout << "Column: ";
+    int col; cin >> col;
+
+    while( !state->play(curPlayer,col) )
     {
-	cout << "Invalid play...\nColumn: ";
+	cout << "Invalid play! Again: ";
 	cin >> col;
     }
 
     curPlayer = 2;
 }
 
-void ConnectFour::AITurn(bool minmax)
+void ConnectFour::botTurn()
 {
+    /*
+    cout << "AI turn." << endl;
+    state->play(curPlayer, bot->play(state));
+    curPlayer = 1;
+    */
+
     cout << "AI turn." << endl;
 
-    int col;
-    cout << "Column: "; cin >> col;
-    while( !state->play(curPlayer, col) )
+    cout << "Column: ";
+    int col; cin >> col;
+
+    while( !state->play(curPlayer,col) )
     {
-	cout << "Invalid play...\nColumn: ";
+	cout << "Invalid play! Again: ";
 	cin >> col;
     }
-    
+
     curPlayer = 1;
 }
