@@ -33,6 +33,10 @@ private:
     
     int hasWinner() const;
     int isFull() const;
+    int evalRows() const;
+    int evalColumns() const;
+    int evalDiagonals() const;
+    int runEvalDiagonal(int x, int y, int dirX, int dirY) const;
     int checkRows() const;
     int checkColumns() const;
     int checkDiagonals() const;

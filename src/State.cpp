@@ -96,7 +96,7 @@ int State::isTerminal() const
 
 int State::eval() const
 {
-    return 0;
+    return evalRows() + evalColumns() + evalDiagonals();
 }
 
 void State::print() const
@@ -135,6 +135,163 @@ int State::isFull() const
     return 1;
 }
 
+int State::evalRows() const
+{
+  int total = 0;
+
+  for(int i=0; i<r; ++i)
+    {
+      for (int k=0; k<(c-4); ++k)
+	{
+	  int human=0, pc=0;
+	  for(int j=k; j<(4+k); ++j) 
+	    {
+	      switch(board[j].getCell(i))
+		{
+		case 1:
+		  human++; pc=0; break;
+		case 2:
+		  human=0; pc++; break;
+		default:
+		  human+=0; pc+=0;
+		}
+	    }
+	  int sign = 0;
+	  
+	  if (human != 0 && pc != 0) {
+	    total += 0;
+	  } else {
+	    (human == 0) ? sign = -1 : sign = 1;
+	    
+	    if (human == 3 || pc == 3)
+	      total += 50*sign;
+	    else if (human == 2 || pc == 2)
+	      total += 10*sign;
+	    else if (human == 1 || pc == 1)
+	      total +=  1*sign;
+	    else
+	      total += 0;
+	  }
+
+	}
+    }
+  return total;
+}
+
+int State::evalColumns() const
+{
+  int total = 0;
+
+  for(int i=0; i<c; ++i)
+    {
+      for (int k=0; k<(r-4); k++)
+	{
+	  int human=0, pc=0;
+	  for(int j=k; j<(4+k); ++j) 
+	    {
+	      switch(board[j].getCell(i))
+		{
+		case 1:
+		  human++; pc=0; break;
+		case 2:
+		  human=0; pc++; break;
+		default:
+		  human+=0; pc+=0;
+		}
+	    }
+	  int sign = 0;
+	  
+	  if (human != 0 && pc != 0) {
+	    total += 0;
+	  } else {
+	    (human == 0) ? sign = -1 : sign = 1;
+	    
+	    if (human == 3 || pc == 3)
+	      total += 50*sign;
+	    else if (human == 2 || pc == 2)
+	      total += 10*sign;
+	    else if (human == 1 || pc == 1)
+	      total +=  1*sign;
+	    else
+	      total += 0;
+	  }
+
+	}
+    }
+  return total;
+}
+
+int State::evalDiagonals() const
+{
+    int total;
+    
+    // top-left to top-right
+    for(int j=0; j<c && (c-j >= 4); ++j)
+      total += runEvalDiagonal(0,j,1,1);
+    
+    // top-left to bottom-left
+    for(int i=1; i<r && (r-i >= 4); ++i)
+      total += runEvalDiagonal(i,0,1,1);
+
+    // bottom-left to top-left
+    for(int i=r-1; i>=0 && (i+1 >= 4); --i)
+      total += runEvalDiagonal(i,0,-1,1);
+    
+    // bottom-left to bottom-right
+    for(int j=1; j<c && (c-j >= 4); ++j)
+      total += runEvalDiagonal(r-1,j,-1,1);
+    
+    return total;
+}
+
+int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
+{
+  int total = 0;
+  int startx = x;
+  int starty = y;
+
+  while(x>=0 && x<r && y>=0 && y<c)
+    {
+      x = startx;
+      y = starty;
+      
+      int human=0, pc=0;
+      for (int i=0; i<4 && x>=0 && x<r && y>=0 && y<c; i++)
+	{
+	  switch(board[y].getCell(x))
+	    {
+	    case 1:  human++; pc=0; break;
+	    case 2:  human=0; pc++; break;
+	    default: human=0; pc=0;
+	    }
+	  
+	  x+=dirX;
+	  y+=dirY;
+	}
+      int sign = 0;
+      
+      if (human != 0 && pc != 0) {
+	total += 0;
+      } else {
+	(human == 0) ? sign = -1 : sign = 1;
+	
+	if (human == 3 || pc == 3)
+	  total += 50*sign;
+	else if (human == 2 || pc == 2)
+	  total += 10*sign;
+	else if (human == 1 || pc == 1)
+	  total +=  1*sign;
+	else
+	  total += 0;
+      }
+      
+      startx += dirX;
+      starty += dirY;
+    }
+
+  return total;
+}
+
 int State::checkRows() const
 {
     for(int i=0; i<r; ++i)
@@ -144,12 +301,9 @@ int State::checkRows() const
 	{
 	    switch(board[j].getCell(i))
 	    {
-	        case 1:
-		    human++; pc=0; break;
-	        case 2:
-		    human=0; pc++; break;
-	        default:
-		    human=0; pc=0;
+	        case 1:  human++; pc=0; break;
+	        case 2:  human=0; pc++; break;
+	        default: human=0; pc=0;
 	    }
 
 	    if (human == 4) return -512;
