@@ -32,11 +32,11 @@ void ConnectFour::init()
     cin >> nCols;
 
     int op;
-    cout << "Algorithm:\n1 - Minmax\n2 - Alpha Beta\n" << endl;
+    cout << "Algorithm: (1-Minmax) (2-Alpha Beta) ";
     cin >> op;
     
     state = new State(nRows,nCols);
-    bot = new AI( (op == 1 ? true : false), 12);
+    bot = new AI(op,12);
     curPlayer = 1 + rand()%2; // random start player
 }
 
@@ -76,23 +76,6 @@ void ConnectFour::humanTurn()
 void ConnectFour::botTurn()
 {
     cout << "AI turn." << endl;
-    int RESULT = bot->play(state);
-    cout << "RESULT FROM MINMAX: " << RESULT << endl;
-    state->play(curPlayer, RESULT);
+    state->play(curPlayer, bot->play(state));
     curPlayer = 1;
-
-    /*
-    cout << "AI turn." << endl;
-
-    cout << "Column: ";
-    int col; cin >> col;
-
-    while( !state->play(curPlayer,col) )
-    {
-	cout << "Invalid play! Again: ";
-	cin >> col;
-    }
-
-    curPlayer = 1;
-    */
 }
