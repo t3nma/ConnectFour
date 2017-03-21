@@ -14,7 +14,7 @@ int AI::play(State *state) const
 int AI::minmax(State *state) const
 {
     NODE r = maxValue(state,0);
-    cout << "AI minmax VALUE: " << r.first << endl;
+    //cout << "AI minmax VALUE: " << r.first << endl;
     return r.second;
 }
 

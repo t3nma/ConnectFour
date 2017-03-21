@@ -101,7 +101,7 @@ int State::eval() const
   int diags = evalDiagonals();
   int bonus = 16;
   
-  cout << "Rows eval: " << rows << endl << "Cols eval: " << cols << endl << "Diags eval: " << diags << endl << "Bonus eval: " << bonus << endl;
+  //cout << "Rows eval: " << rows << endl << "Cols eval: " << cols << endl << "Diags eval: " << diags << endl << "Bonus eval: " << bonus << endl;
   return rows + cols + diags + bonus;
   //return evalRows() + evalColumns() + evalDiagonals() + bonus;
 }
@@ -175,7 +175,7 @@ int State::evalRows() const
 	    */
 
 	    if ( (human == 0 && pc != 0) || (human != 0 && pc == 0) ) {
-	      int sign = (human == 0) ? -1 : 1;
+	      int sign = (human == 0) ? 1 : -1;
 	      
 	      if (human == 3 || pc == 3)
 		total += 50*sign;
@@ -219,7 +219,7 @@ int State::evalColumns() const
 	    */
 
 	    if ( (human == 0 && pc != 0) || (human != 0 && pc == 0) ) {
-	      int sign = (human == 0) ? -1 : 1;
+	      int sign = (human == 0) ? 1 : -1;
 	      
 	      if (human == 3 || pc == 3)
 		total += 50*sign;
@@ -264,7 +264,7 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
     int startx = x;
     int starty = y;
 
-    while( ((dirX==1 && x>=0 && x<=(r-4)) || (dirX==-1 && x<r && x>=3)) && y>=0 && y<=(c-4) )
+    while( ((dirX==1 && x<=(r-4)) || (dirX==-1 && x>=3)) && y<=(c-4) )
     {	
 	int human=0, pc=0;
 	for (int i=0; i<4; i++)
@@ -282,7 +282,7 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 	}
 	
 	if ( (human == 0 && pc != 0) || (human != 0 && pc == 0) ) {
-	  int sign = (human == 0) ? -1 : 1;
+	  int sign = (human == 0) ? 1 : -1;
 	  
 	  if (human == 3 || pc == 3)
 	    total += 50*sign;
