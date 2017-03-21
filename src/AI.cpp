@@ -13,7 +13,7 @@ int AI::play(State *state) const
 
 int AI::minmax(State *state) const
 {
-    NODE r = maxValue(state,1);
+    NODE r = maxValue(state,0);
     cout << "AI minmax VALUE: " << r.first << endl;
     return r.second;
 }
@@ -31,7 +31,7 @@ NODE AI::maxValue(State *state, int depth) const
 	return result;
     else if(depth == depthBound)
     {
-	result.first = state->eval();
+	result.first = state->eval(2);
 	return result;
     }
     else
@@ -59,7 +59,7 @@ NODE AI::minValue(State *state, int depth) const
 	return result;
     else if(depth == depthBound)
     {
-	result.first = state->eval();
+	result.first = state->eval(1);
 	return result;
     }
     else

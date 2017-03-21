@@ -20,7 +20,7 @@ public:
     bool play(int player, int column);
     vector<State*> makeDescendants(int player) const;
     int isTerminal() const;
-    int eval() const;
+    int eval(int player) const;
     void print() const;
     
     // TODO << SUPPORT
