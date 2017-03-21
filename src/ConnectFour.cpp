@@ -1,7 +1,7 @@
 #include "headers/ConnectFour.h"
 #include <iostream>
-#include <stdlib.h>
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 

@@ -49,7 +49,6 @@ bool Column::isFull() const
 
 void Column::placeCell(int player)
 {
-    // THROW EXCEPTION ?
     cells[top] = player;
     if(player != 0)
 	top++;

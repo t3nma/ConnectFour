@@ -31,13 +31,13 @@ NODE AI::maxValue(State *state, int depth) const
 	return result;
     else if(depth == depthBound)
     {
-	result.first = state->eval(2);
+	result.first = state->eval();
 	return result;
     }
     else
 	result.first = INT_MIN;
     
-    vector<State*> childs = state->makeDescendants(1);
+    vector<State*> childs = state->makeDescendants(2);
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
 	NODE tmp = minValue(*it,depth+1);
@@ -59,13 +59,13 @@ NODE AI::minValue(State *state, int depth) const
 	return result;
     else if(depth == depthBound)
     {
-	result.first = state->eval(1);
+	result.first = state->eval();
 	return result;
     }
     else
 	result.first = INT_MAX;
     
-    vector<State*> childs = state->makeDescendants(2);
+    vector<State*> childs = state->makeDescendants(1);
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
 	NODE tmp = maxValue(*it,depth+1);
