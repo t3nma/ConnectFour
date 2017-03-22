@@ -39,16 +39,18 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
     else
 	result.first = INT_MIN;
 
-    vector<State> childs = state->makeDescendants(2);
+    vector<State*> childs = state->makeDescendants(2);
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
-	NODE tmp = minValue(&(*it),depth+1,alfa,beta);
+	NODE tmp = minValue(*it,depth+1,alfa,beta);
 
 	if(tmp.first > result.first)
 	{
 	    result.first = tmp.first;
-	    result.second = (*it).getMove();
+	    result.second = (*it)->getMove();
 	}
+
+	delete (*it); // free state*
 	
 	if(!useMinmax)
 	{
@@ -57,7 +59,7 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
 	    alfa = max(alfa,tmp.first);
 	}
     }
-
+    
     return result;
 }
 
@@ -75,16 +77,18 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta) const
     else
 	result.first = INT_MAX;
 
-    vector<State> childs = state->makeDescendants(1);
+    vector<State*> childs = state->makeDescendants(1);
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
-	NODE tmp = maxValue(&(*it),depth+1,alfa,beta);
+	NODE tmp = maxValue(*it,depth+1,alfa,beta);
 
 	if(tmp.first < result.first)
 	{
 	    result.first = tmp.first;
-	    result.second = (*it).getMove();
+	    result.second = (*it)->getMove();
 	}
+
+	delete (*it); // free state*
 	
 	if(!useMinmax)
 	{
