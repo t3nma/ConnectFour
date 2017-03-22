@@ -39,7 +39,7 @@ State& State::operator=(const State& s)
 
 State::~State()
 {
-    if(board != NULL)
+    if(board != nullptr)
 	delete [] board;
 }
 
@@ -62,19 +62,19 @@ bool State::play(int player, int column)
     return true;
 }
 
-vector<State*> State::makeDescendants(int player) const
+vector<State> State::makeDescendants(int player) const
 {
-    vector<State*> descendants;
+    vector<State> descendants;
 
     for(int i=0; i<c; ++i)
     {
-	State* s = new State(*this);
+	State s(*this);
 	bool changed = false;
-
-	if(!s->board[i].isFull())
+	
+	if(!s.board[i].isFull())
 	{
-	    s->board[i].placeCell(player);
-	    s->setMove(i);
+	    s.board[i].placeCell(player);
+	    s.setMove(i);
 	    changed = true;
 	}
 

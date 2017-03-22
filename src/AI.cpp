@@ -8,22 +8,24 @@ AI::AI(bool useMinmax, int depthBound)
 
 int AI::play(State *state) const
 {
-    return useMinmax ? minmax(state) : alphaBeta(state);
+    return useMinmax ? minmax(state) : alfaBeta(state);
 }
 
 int AI::minmax(State *state) const
 {
+    /*
     NODE r = maxValue(state,0);
-    //cout << "AI minmax VALUE: " << r.first << endl;
-    return r.second;
+    cout << "AI minmax VALUE: " << r.first << endl;
+    */
+    return maxValue(state,0).second;
 }
 
-int AI::alphaBeta(State *state) const
+int AI::alfaBeta(State *state) const
 {
-    return 0;
+    return maxValue(state,0,INT_MIN,INT_MAX).second;
 }
 
-NODE AI::maxValue(State *state, int depth) const
+NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
 {
     NODE result(-1,state->getMove()); // (utility,move)
     
@@ -36,22 +38,30 @@ NODE AI::maxValue(State *state, int depth) const
     }
     else
 	result.first = INT_MIN;
-    
-    vector<State*> childs = state->makeDescendants(2);
+
+    vector<State> childs = state->makeDescendants(2);
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
-	NODE tmp = minValue(*it,depth+1);
+	NODE tmp = minValue(&(*it),depth+1,alfa,beta);
+
 	if(tmp.first > result.first)
 	{
 	    result.first = tmp.first;
-	    result.second = (*it)->getMove();
+	    result.second = (*it).getMove();
+	}
+	
+	if(!useMinmax)
+	{
+	    if(tmp.first >= beta)
+		return result; // is it fine to do ?
+	    alfa = max(alfa,tmp.first);
 	}
     }
 
     return result;
 }
 
-NODE AI::minValue(State *state, int depth) const
+NODE AI::minValue(State *state, int depth, int alfa, int beta) const
 {
     NODE result(-1,state->getMove()); // (utility,move)
 
@@ -64,15 +74,23 @@ NODE AI::minValue(State *state, int depth) const
     }
     else
 	result.first = INT_MAX;
-    
-    vector<State*> childs = state->makeDescendants(1);
+
+    vector<State> childs = state->makeDescendants(1);
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
-	NODE tmp = maxValue(*it,depth+1);
+	NODE tmp = maxValue(&(*it),depth+1,alfa,beta);
+
 	if(tmp.first < result.first)
 	{
 	    result.first = tmp.first;
-	    result.second = (*it)->getMove();
+	    result.second = (*it).getMove();
+	}
+	
+	if(!useMinmax)
+	{
+	    if(tmp.first <= alfa)
+		return result; // is it fine to do?
+	    beta = min(beta,tmp.first);
 	}
     }
 

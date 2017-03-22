@@ -18,7 +18,7 @@ public:
     void setMove(int move);
     
     bool play(int player, int column);
-    vector<State*> makeDescendants(int player) const;
+    vector<State> makeDescendants(int player) const;
     int isTerminal() const;
     int eval() const;
     void print() const;

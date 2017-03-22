@@ -25,10 +25,10 @@ private:
     int depthBound;
     
     int minmax(State *state) const;
-    int alphaBeta(State *state) const;
+    int alfaBeta(State *state) const;
 
-    NODE maxValue(State *state, int depth) const;
-    NODE minValue(State *state, int depth) const;
+    NODE maxValue(State *state, int depth, int alfa=0, int beta=0) const;
+    NODE minValue(State *state, int depth, int alfa=0, int beta=0) const;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include <iostream>
 
 Column::Column()
+    : cells(nullptr)
 {
 }
 
@@ -23,13 +24,12 @@ Column::Column(const Column& c)
 
 Column& Column::operator=(const Column& c)
 {
-    r = c.r;
+    if(cells != nullptr)
+	delete [] cells;
+    
+    init(c.r);
     top = c.top;
 
-    if(cells != NULL)
-	delete [] cells;
-
-    cells = new int[r];
     for(int i=0; i<r; ++i)
 	cells[i] = c.cells[i];
 
@@ -38,8 +38,7 @@ Column& Column::operator=(const Column& c)
 
 Column::~Column()
 {
-    if(cells != NULL)
-	delete [] cells;
+    delete [] cells;
 }
 
 bool Column::isFull() const

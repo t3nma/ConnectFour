@@ -36,7 +36,7 @@ void ConnectFour::init()
     cin >> op;
     
     state = new State(nRows,nCols);
-    bot = new AI(op,12);
+    bot = new AI(op,5);
     curPlayer = 1 + rand()%2; // random start player
 }
 
