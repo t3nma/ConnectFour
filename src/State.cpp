@@ -96,14 +96,13 @@ int State::isTerminal() const
   
 int State::eval() const
 {
-  int rows = evalRows();
-  int cols = evalColumns();
-  int diags = evalDiagonals();
-  int bonus = 16;
+    int rows = evalRows();
+    int cols = evalColumns();
+    int diags = evalDiagonals();
+    int bonus = 16;
   
-  //cout << "Rows eval: " << rows << endl << "Cols eval: " << cols << endl << "Diags eval: " << diags << endl << "Bonus eval: " << bonus << endl;
-  return rows + cols + diags + bonus;
-  //return evalRows() + evalColumns() + evalDiagonals() + bonus;
+    //cout << "Rows eval: " << rows << endl << "Cols eval: " << cols << endl << "Diags eval: " << diags << endl << "Bonus eval: " << bonus << endl;
+    return rows + cols + diags + bonus;
 }
 
 void State::print() const

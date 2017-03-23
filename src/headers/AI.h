@@ -18,17 +18,18 @@ class AI
 public:
     AI(bool useMinmax, int depthBound);
 
-    int play(State *state) const;  
+    int play(State *state);
 
 private:
     bool useMinmax;
     int depthBound;
+    int visitedNodes;
     
-    int minmax(State *state) const;
-    int alfaBeta(State *state) const;
+    int minmax(State *state);
+    int alfaBeta(State *state);
 
-    NODE maxValue(State *state, int depth, int alfa=0, int beta=0) const;
-    NODE minValue(State *state, int depth, int alfa=0, int beta=0) const;
+    NODE maxValue(State *state, int depth, int alfa=0, int beta=0);
+    NODE minValue(State *state, int depth, int alfa=0, int beta=0);
 };
 
 #endif

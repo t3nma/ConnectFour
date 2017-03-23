@@ -4,28 +4,30 @@ AI::AI(bool useMinmax, int depthBound)
     : useMinmax(useMinmax),
       depthBound(depthBound)
 {
+    if(!useMinmax)
+	cout << "USING ALFA BETA!\n";
 }
 
-int AI::play(State *state) const
+int AI::play(State *state)
 {
-    return useMinmax ? minmax(state) : alfaBeta(state);
+    visitedNodes = 0;
+    int r = useMinmax ? minmax(state) : alfaBeta(state);
+    cout << "Visited Nodes: " << visitedNodes << endl;
+    
+    return r;
 }
 
-int AI::minmax(State *state) const
+int AI::minmax(State *state)
 {
-    /*
-    NODE r = maxValue(state,0);
-    cout << "AI minmax VALUE: " << r.first << endl;
-    */
     return maxValue(state,0).second;
 }
 
-int AI::alfaBeta(State *state) const
+int AI::alfaBeta(State *state)
 {
     return maxValue(state,0,INT_MIN,INT_MAX).second;
 }
 
-NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
+NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 {
     NODE result(-1,state->getMove()); // (utility,move)
     
@@ -43,7 +45,8 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
 	NODE tmp = minValue(*it,depth+1,alfa,beta);
-
+	visitedNodes++;
+	
 	if(tmp.first > result.first)
 	{
 	    result.first = tmp.first;
@@ -55,7 +58,7 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
 	if(!useMinmax)
 	{
 	    if(tmp.first >= beta)
-		return result; // is it fine to do ?
+		return result;
 	    alfa = max(alfa,tmp.first);
 	}
     }
@@ -63,7 +66,7 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta) const
     return result;
 }
 
-NODE AI::minValue(State *state, int depth, int alfa, int beta) const
+NODE AI::minValue(State *state, int depth, int alfa, int beta)
 {
     NODE result(-1,state->getMove()); // (utility,move)
 
@@ -81,7 +84,8 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta) const
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
 	NODE tmp = maxValue(*it,depth+1,alfa,beta);
-
+	visitedNodes++;
+	
 	if(tmp.first < result.first)
 	{
 	    result.first = tmp.first;
@@ -93,7 +97,7 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta) const
 	if(!useMinmax)
 	{
 	    if(tmp.first <= alfa)
-		return result; // is it fine to do?
+		return result;
 	    beta = min(beta,tmp.first);
 	}
     }
