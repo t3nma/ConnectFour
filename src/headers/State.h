@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "Column.h"
-
 using namespace std;
 
 class State
@@ -41,6 +40,7 @@ private:
     int checkColumns() const;
     int checkDiagonals() const;
     int runDiagonal(int x, int y, int dirX, int dirY) const;
+    int segmentPoints(int humanCount, int pcCount) const;
 };
 
 #endif

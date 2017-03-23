@@ -4,8 +4,6 @@ AI::AI(bool useMinmax, int depthBound)
     : useMinmax(useMinmax),
       depthBound(depthBound)
 {
-    if(!useMinmax)
-	cout << "USING ALFA BETA!\n";
 }
 
 int AI::play(State *state)

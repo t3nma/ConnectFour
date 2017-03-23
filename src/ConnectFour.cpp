@@ -36,15 +36,19 @@ void ConnectFour::init()
     cin >> op;
     
     state = new State(nRows,nCols);
-    bot = new AI(((op == 1) ? true : false),8);
+    bot = new AI(((op == 1) ? true : false),7);
     curPlayer = 1 + rand()%2; // random start player
+
+    cout << endl;
 }
 
 void ConnectFour::start()
 {
+    cout << "Initial State:";
     state->print();
-
-    while(state->isTerminal() == 0)
+    
+    int winner;
+    while( (winner = state->isTerminal()) == 0)
     {
 	if(curPlayer == 1)
 	    humanTurn();
@@ -54,7 +58,10 @@ void ConnectFour::start()
 	state->print();
     }
 
-    cout << "GAME ENDED!" << endl;
+    if(winner == 0)
+	cout << "It's a DRAW!" << endl;
+    else
+	cout << ( (winner > 0) ? "AI" : "You" ) << " WON!" << endl;
 }
 
 void ConnectFour::humanTurn()
@@ -66,7 +73,7 @@ void ConnectFour::humanTurn()
 
     while( !state->play(curPlayer,col) )
     {
-	cout << "Invalid play! Again: ";
+	cout << "Invalid play! Column: ";
 	cin >> col;
     }
 
@@ -75,7 +82,7 @@ void ConnectFour::humanTurn()
 
 void ConnectFour::botTurn()
 {
-    cout << "AI turn." << endl;
+    cout << "AI turn..." << endl;
     state->play(curPlayer, bot->play(state));
     curPlayer = 1;
 }

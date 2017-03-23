@@ -95,17 +95,14 @@ int State::isTerminal() const
   
 int State::eval() const
 {
-    int rows = evalRows();
-    int cols = evalColumns();
-    int diags = evalDiagonals();
     int bonus = 16;
-  
-    //cout << "Rows eval: " << rows << endl << "Cols eval: " << cols << endl << "Diags eval: " << diags << endl << "Bonus eval: " << bonus << endl;
-    return rows + cols + diags + bonus;
+    return evalRows() + evalColumns() + evalDiagonals() + bonus;
 }
 
 void State::print() const
 {
+    cout << endl;
+    
     char sym[] = {'.', 'X', 'O'};
     
     for(int i=r-1; i>=0; --i)
@@ -117,7 +114,7 @@ void State::print() const
 
     for(int j=0; j<c; ++j)
 	cout << j << " ";
-    cout << endl;
+    cout << endl << endl;
 }
 
 int State::hasWinner() const
@@ -167,22 +164,7 @@ int State::evalRows() const
 		}
 	    }
 
-	    /*
-	    cout << "EvalRows(" << i << ") segment " << j << "-" << j+3 << ":" << endl;
-	    cout << "Human: " << human << endl << "PC: " << pc << endl;
-	    */
-
-	    if ( (human == 0 && pc != 0) || (human != 0 && pc == 0) ) {
-	      int sign = (human == 0) ? 1 : -1;
-	      
-	      if (human == 3 || pc == 3)
-		total += 50*sign;
-	      else if (human == 2 || pc == 2)
-		total += 10*sign;
-	      else if (human == 1 || pc == 1)
-		total +=  1*sign;
-	    }
-	    
+	    total += segmentPoints(human,pc);
 	}
     }
     
@@ -211,22 +193,7 @@ int State::evalColumns() const
 		}
 	    }
 
-	    /*
-	    cout << "EvalColumns(" << j << ") segment " << i << "-" << i+3 << ":" << endl;
-	    cout << "Human: " << human << endl << "PC: " << pc << endl;
-	    */
-
-	    if ( (human == 0 && pc != 0) || (human != 0 && pc == 0) ) {
-	      int sign = (human == 0) ? 1 : -1;
-	      
-	      if (human == 3 || pc == 3)
-		total += 50*sign;
-	      else if (human == 2 || pc == 2)
-		total += 10*sign;
-	      else if (human == 1 || pc == 1)
-		total +=  1*sign;
-	    }
-
+	    total += segmentPoints(human,pc);
 	}
     }
     
@@ -267,7 +234,7 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 	int human=0, pc=0;
 	for (int i=0; i<4; i++)
        	{
-	    int normX = (dirX == 1) ? (r-1)-x : x-(r-1);
+	    int normX = (r-1)-x;
 	    switch(board[y].getCell(normX))
 	    {
 	        case 1:  human++; break;
@@ -279,16 +246,7 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 	    y+=dirY;
 	}
 	
-	if ( (human == 0 && pc != 0) || (human != 0 && pc == 0) ) {
-	  int sign = (human == 0) ? 1 : -1;
-	  
-	  if (human == 3 || pc == 3)
-	    total += 50*sign;
-	  else if (human == 2 || pc == 2)
-	    total += 10*sign;
-	  else if (human == 1 || pc == 1)
-	    total +=  1*sign;
-	}
+	total += segmentPoints(human,pc);
 	      
 	startx += dirX; x = startx;
 	starty += dirY; y = starty;
@@ -385,6 +343,22 @@ int State::runDiagonal(int x, int y, int dirX, int dirY) const
 
 	x+=dirX;
 	y+=dirY;
+    }
+
+    return 0;
+}
+
+int State::segmentPoints(int humanCount, int pcCount) const
+{
+    if ( (humanCount == 0 && pcCount != 0) || (humanCount != 0 && pcCount == 0) ) {
+	int sign = (humanCount == 0) ? 1 : -1;
+
+	if (humanCount == 3 || pcCount == 3)
+	    return 50*sign;
+	else if (humanCount == 2 || pcCount == 2)
+	    return 10*sign;
+	else if (humanCount == 1 || pcCount == 1)
+	    return  1*sign;
     }
 
     return 0;
