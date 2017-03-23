@@ -27,8 +27,7 @@ State& State::operator=(const State& s)
     c = s.c;
     move = s.move;
     
-    if(board != NULL)
-	delete [] board;
+    delete [] board;
 
     board = new Column[c];
     for(int i=0; i<c; ++i)
