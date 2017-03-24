@@ -51,8 +51,8 @@ void ConnectFour::start()
     cout << "Initial State:";
     state->print();
     
-    int winner;
-    while( (winner = state->isTerminal()) == 0)
+    int points = state->eval(0);
+    while( points != 512 && points != -512 && !state->isFull() )
     {
 	if(curPlayer == 1)
 	    humanTurn();
@@ -60,12 +60,13 @@ void ConnectFour::start()
 	    botTurn();
 
 	state->print();
+	points = state->eval(0);
     }
 
-    if(winner == 1)
-	cout << "It's a DRAW!" << endl;
+    if(points == -512 || points == 512)
+	cout << ( (points > 0) ? "AI" : "You" ) << " WON!" << endl;
     else
-	cout << ( (winner > 0) ? "AI" : "You" ) << " WON!" << endl;
+    	cout << "It's a DRAW!" << endl;
 }
 
 void ConnectFour::humanTurn()

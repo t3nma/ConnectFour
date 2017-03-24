@@ -83,20 +83,24 @@ vector<State*> State::makeDescendants(int player) const
 
     return descendants;
 }
-
-int State::isTerminal() const
-{
-    int winner;
-    if((winner = hasWinner()) != 0)
-	return winner;
-    
-    return isFull();
-}
   
-int State::eval() const
+int State::eval(int depth) const
 {
+    int rows = evalRows(depth);
+    if(rows <= -512 || rows >= 512)
+	return rows;
+    
+    int cols = evalColumns(depth);
+    if(cols <= -512 || cols >= 512)
+	return cols;
+    
+    int diagonals = evalDiagonals(depth);
+    if(diagonals <= -512 || diagonals >= 512)
+	return diagonals;
+
     int bonus = 16;
-    return evalRows() + evalColumns() + evalDiagonals() + bonus;
+    
+    return rows + cols + diagonals + bonus;
 }
 
 void State::print() const
@@ -117,32 +121,16 @@ void State::print() const
     cout << endl << endl;
 }
 
-int State::hasWinner() const
-{
-    int value;
-    
-    if( (value = checkRows()) != 0)
-	return value;
-
-    if( (value = checkColumns()) != 0)
-	return value;
-
-    if( (value = checkDiagonals()) != 0)
-	return value;
-    
-    return 0;
-}
-
-int State::isFull() const
+bool State::isFull() const
 {
     for(int i=0; i<c; ++i)
 	if(!board[i].isFull())
-	    return 0;
+	    return false;
 
-    return 1;
+    return true;
 }
 
-int State::evalRows() const
+int State::evalRows(int depth) const
 {
     int total = 0;
 
@@ -163,15 +151,19 @@ int State::evalRows() const
 		        break;
 		}
 	    }
-
-	    total += segmentPoints(human,pc);
+	    
+	    int points = segmentPoints(human,pc,depth);
+	    if(points <= -512 || points >= 512)
+		return points;
+	    
+	    total += points;
 	}
     }
     
     return total;
 }
 
-int State::evalColumns() const
+int State::evalColumns(int depth) const
 {
     int total = 0;
 
@@ -193,37 +185,65 @@ int State::evalColumns() const
 		}
 	    }
 
-	    total += segmentPoints(human,pc);
+	    int points = segmentPoints(human,pc,depth);
+	    if(points <= -512 || points >= 512)
+		return points;
+
+	    total += points;
 	}
     }
     
     return total;
 }
 
-int State::evalDiagonals() const
+int State::evalDiagonals(int depth) const
 {
     int total = 0;
     
     // top-left to top-right
     for(int j=0; j<=(c-4); ++j)
-	total += runEvalDiagonal(0,j,1,1);
+    {
+	int points = runEvalDiagonal(0,j,1,1,depth);
+	if(points <= -512 || points >= 512)
+	    return points;
 
+	total += points;
+    }
+    
     // top-left to bottom-left
     for(int i=1; i<=(r-4); ++i)
-	total += runEvalDiagonal(i,0,1,1);
+    {
+	int points = runEvalDiagonal(i,0,1,1,depth);
+	if(points <= -512 || points >= 512)
+	    return points;
 
+	total += points;
+    }
+    
     // bottom-left to top-left
     for(int i=r-1; i>=3; --i)
-	total += runEvalDiagonal(i,0,-1,1);
+    {
+	int points = runEvalDiagonal(i,0,-1,1,depth);
+	if(points <= -512 || points >= 512)
+	    return points;
+	
+	total += points;
+    }
     
     // bottom-left to bottom-right
     for(int j=1; j<=(c-4); ++j)
-	total += runEvalDiagonal(r-1,j,-1,1);
+    {
+	int points = runEvalDiagonal(r-1,j,-1,1,depth);
+	if(points <= -512 || points >= 512)
+	    return points;
+	
+	total += points;
+    }
     
     return total;
 }
 
-int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
+int State::runEvalDiagonal(int x, int y, int dirX, int dirY, int depth) const
 {
     int total = 0;
     int startx = x;
@@ -245,8 +265,12 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 	    x+=dirX;
 	    y+=dirY;
 	}
-	
-	total += segmentPoints(human,pc);
+
+	int points = segmentPoints(human,pc,depth);
+	if(points <= -512 || points >= 512)
+	    return points;
+
+	total += points;
 	      
 	startx += dirX; x = startx;
 	starty += dirY; y = starty;
@@ -255,112 +279,21 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
     return total;
 }
 
-int State::checkRows() const
+int State::segmentPoints(int humanCount, int pcCount, int depth) const
 {
-    for(int i=0; i<r; ++i)
-    {
-	int human=0, pc=0;
-	for(int j=0; j<c; ++j)
-	{
-	    switch(board[j].getCell(i))
-	    {
-	        case 1:  human++; pc=0; break;
-	        case 2:  human=0; pc++; break;
-	        default: human=0; pc=0;
-	    }
-
-	    if (human == 4) return -512;
-	    if (pc == 4)    return 512;
-	}
-    }
+    if(humanCount != 0 && pcCount != 0)
+	return 0;
     
-    return 0;
-}
+    int sign = (humanCount == 0) ? 1 : -1;
 
-int State::checkColumns() const
-{
-    for(int j=0; j<c; ++j)
-    {
-	int human=0, pc=0;
-	for(int i=0; i<r; ++i)
-	{
-	    switch(board[j].getCell(i))
-	    {
-	        case 1:  human++; pc=0; break;
-	        case 2:  human=0; pc++; break;
-	        default: human=0; pc=0;
-	    }
-
-	    if (human == 4) return -512;
-	    if (pc == 4)    return  512;
-	}
-    }
-
-    return 0;
-}
-
-int State::checkDiagonals() const
-{
-    int value;
-    
-    // top-left to top-right
-    for(int j=0; j<=(c-4); ++j)
-	if( (value = runDiagonal(0,j,1,1)) != 0 )
-	    return value;
-    
-    // top-left to bottom-left
-    for(int i=1; i<r && i<=(r-4); ++i)
-	if( (value = runDiagonal(i,0,1,1)) != 0 )
-	    return value;
-
-    // bottom-left to top-left
-    for(int i=r-1; i>=3; --i)
-	if( (value = runDiagonal(i,0,-1,1)) != 0 )
-	    return value;
-    
-    // bottom-left to bottom-right
-    for(int j=1; j<=(c-4); ++j)
-	if( (value = runDiagonal(r-1,j,-1,1)) != 0 )
-	    return value;
-    
-    return 0;
-}
-
-int State::runDiagonal(int x, int y, int dirX, int dirY) const
-{
-    int human=0, pc=0;
-    while(x>=0 && x<r && y>=0 && y<c)
-    {
-	int normX = (r-1)-x;
-	switch(board[y].getCell(normX))
-	{
-	    case 1:  human++; pc=0; break;
-	    case 2:  human=0; pc++; break;
-	    default: human=0; pc=0;
-	}
-
-	if (human == 4) return -512;
-	if (pc == 4)    return 512;
-
-	x+=dirX;
-	y+=dirY;
-    }
-
-    return 0;
-}
-
-int State::segmentPoints(int humanCount, int pcCount) const
-{
-    if ( (humanCount == 0 && pcCount != 0) || (humanCount != 0 && pcCount == 0) ) {
-	int sign = (humanCount == 0) ? 1 : -1;
-
-	if (humanCount == 3 || pcCount == 3)
-	    return 50*sign;
-	else if (humanCount == 2 || pcCount == 2)
-	    return 10*sign;
-	else if (humanCount == 1 || pcCount == 1)
-	    return  1*sign;
-    }
-
-    return 0;
+    if(humanCount == 4 || pcCount == 4)
+	return (512+depth)*sign;
+    else if (humanCount == 3 || pcCount == 3)
+	return 50*sign;
+    else if (humanCount == 2 || pcCount == 2)
+	return 10*sign;
+    else if (humanCount == 1 || pcCount == 1)
+	return  1*sign;
+    else
+	return 0;
 }
