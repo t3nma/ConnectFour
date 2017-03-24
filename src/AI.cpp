@@ -14,7 +14,7 @@ int AI::play(State *state)
 
     cout << "Action: " << action << endl;
     cout << setprecision(2) << "Time spent: " << performance.elapsedTime << "s" << endl;
-    cout << "Nodes visited: " << performance.expandedNodes << endl;
+    cout << "Expanded nodes: " << performance.expandedNodes << endl;
     
     return action;
 }
@@ -29,42 +29,25 @@ int AI::alfaBeta(State *state)
     return maxValue(state,0,INT_MIN,INT_MAX).second;
 }
 
-
 NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 {
-    NODE result(-1,state->getMove()); // (utility,move)
-    
     if(depth == depthBound)
     {
-	result.first = state->eval();
+	NODE result(state->eval(),state->getMove());
 	return result;
     }
 
+    NODE optimal = checkForOptimalTerm(state,2);
+    if(optimal.first != -1)
+	return optimal;
+
+    NODE result(INT_MIN,-1);
     vector<State*> childs = state->makeDescendants(2);
-    bool foundTerminal = false;
-
-    for(auto it=childs.begin(); it!=childs.end(); ++it)
-    {
-	if(!foundTerminal && (result.first = (*it)->isTerminal()) != 0 )
-	{
-	    result.second = (*it)->getMove();
-	    foundTerminal = true;
-	}
-
-	delete (*it);
-    }
-
-    if(foundTerminal)
-	return result;
-    
-    childs.clear();
-    childs = state->makeDescendants(2);
-    result.first = INT_MIN;
+    performance.expandedNodes += (int)childs.size();
     
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
 	NODE tmp = minValue(*it,depth+1,alfa,beta);
-	performance.expandedNodes++;
 	
 	if(tmp.first > result.first)
 	{
@@ -87,40 +70,23 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 
 NODE AI::minValue(State *state, int depth, int alfa, int beta)
 {
-    NODE result(-1,state->getMove()); // (utility,move)
-
     if(depth == depthBound)
     {
-	result.first = state->eval();
+	NODE result(state->eval(),state->getMove());
 	return result;
     }
 
-    vector<State*> childs = state->makeDescendants(1);
-    bool foundTerminal = false;
-
-    for(auto it=childs.begin(); it!=childs.end(); ++it)
-    {
-	if(!foundTerminal && (result.first = (*it)->isTerminal()) != 0 )
-	{
-	    result.second = (*it)->getMove();
-	    foundTerminal = true;
-	}
-
-	delete (*it);
-    }
-
-    if(foundTerminal)
-	return result;
+    NODE optimal = checkForOptimalTerm(state,1);
+    if(optimal.first != -1)
+	return optimal;
     
-
-    childs.clear();
-    childs = state->makeDescendants(1);
-    result.first = INT_MAX;
+    NODE result(INT_MAX,-1);
+    vector<State*> childs = state->makeDescendants(1);
+    performance.expandedNodes += (int)childs.size();
     
     for(auto it=childs.begin(); it!=childs.end(); ++it)
     {
 	NODE tmp = maxValue(*it,depth+1,alfa,beta);
-	performance.expandedNodes++; 
 	
 	if(tmp.first < result.first)
 	{
@@ -138,5 +104,30 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta)
 	delete (*it); // free state*
     }
 
+    return result;
+}
+
+NODE AI::checkForOptimalTerm(State *state, int player)
+{
+    NODE result(-1,-1);
+    bool foundTerminal = false;
+
+    vector<State*> childs = state->makeDescendants(player);
+    performance.expandedNodes += (int)childs.size();
+    
+    for(auto it=childs.begin(); it!=childs.end(); ++it)
+    {
+	if(!foundTerminal && (result.first = (*it)->isTerminal()) != 0 )
+	{
+	    result.second = (*it)->getMove();
+	    foundTerminal = true;
+	}
+
+	delete (*it);
+    }
+
+    if(!foundTerminal)
+	result.first = -1;
+	
     return result;
 }

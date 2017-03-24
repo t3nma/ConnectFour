@@ -31,13 +31,17 @@ void ConnectFour::init()
     cout << "Number of Columns: ";
     cin >> nCols;
 
-    int op;
+    int algoOP;
     cout << "Algorithm: (1-Minmax) (2-Alpha Beta) ";
-    cin >> op;
+    cin >> algoOP;
+
+    int playerOP;
+    cout << "First player: (1-Player) (2-AI) ";
+    cin >> playerOP;
     
     state = new State(nRows,nCols);
-    bot = new AI(((op == 1) ? true : false),8);
-    curPlayer = 1 + rand()%2; // random start player
+    bot = new AI(((algoOP == 1) ? true : false),8);
+    curPlayer = playerOP;
 
     cout << endl;
 }
