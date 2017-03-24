@@ -40,7 +40,7 @@ void ConnectFour::init()
     cin >> playerOP;
     
     state = new State(nRows,nCols);
-    bot = new AI(((algoOP == 1) ? true : false),8);
+    bot = new AI(((algoOP == 1) ? true : false), 8);
     curPlayer = playerOP;
 
     cout << endl;
@@ -62,7 +62,7 @@ void ConnectFour::start()
 	state->print();
     }
 
-    if(winner == 0)
+    if(winner == 1)
 	cout << "It's a DRAW!" << endl;
     else
 	cout << ( (winner > 0) ? "AI" : "You" ) << " WON!" << endl;
