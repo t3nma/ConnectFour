@@ -292,7 +292,7 @@ int State::checkColumns() const
 	    }
 
 	    if (human == 4) return -512;
-	    if (pc == 4)    return 512;
+	    if (pc == 4)    return  512;
 	}
     }
 
@@ -331,7 +331,8 @@ int State::runDiagonal(int x, int y, int dirX, int dirY) const
     int human=0, pc=0;
     while(x>=0 && x<r && y>=0 && y<c)
     {
-	switch(board[y].getCell(x))
+	int normX = (r-1)-x;
+	switch(board[y].getCell(normX))
 	{
 	    case 1:  human++; pc=0; break;
 	    case 2:  human=0; pc++; break;

@@ -12,6 +12,32 @@
 #include <algorithm>
 #include <climits>
 #include <iostream>
+#include <iomanip>
+#include <ctime>
+
+struct Performance
+{
+public:
+
+    int expandedNodes;
+    double elapsedTime;
+
+    void init()
+    {
+	expandedNodes = 0;
+	clock_gettime(CLOCK_MONOTONIC,&start);
+    }
+    
+    void time()
+    {
+	struct timespec end;
+	clock_gettime(CLOCK_MONOTONIC,&end);
+	elapsedTime = (end.tv_sec - start.tv_sec) + ((end.tv_nsec - start.tv_nsec)/1000000000.0);
+    }
+    
+private:
+    struct timespec start;
+};
 
 class AI
 {
@@ -23,7 +49,7 @@ public:
 private:
     bool useMinmax;
     int depthBound;
-    int visitedNodes;
+    Performance performance;
     
     int minmax(State *state);
     int alfaBeta(State *state);
