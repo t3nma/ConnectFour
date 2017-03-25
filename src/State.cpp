@@ -84,18 +84,18 @@ vector<State*> State::makeDescendants(int player) const
     return descendants;
 }
   
-int State::eval(int depth) const
+int State::eval() const
 {
-    int rows = evalRows(depth);
-    if(rows <= -512 || rows >= 512)
+    int rows = evalRows();
+    if(rows == -512 || rows == 512)
 	return rows;
     
-    int cols = evalColumns(depth);
-    if(cols <= -512 || cols >= 512)
+    int cols = evalColumns();
+    if(cols == -512 || cols == 512)
 	return cols;
     
-    int diagonals = evalDiagonals(depth);
-    if(diagonals <= -512 || diagonals >= 512)
+    int diagonals = evalDiagonals();
+    if(diagonals == -512 || diagonals == 512)
 	return diagonals;
 
     int bonus = 16;
@@ -130,7 +130,7 @@ bool State::isFull() const
     return true;
 }
 
-int State::evalRows(int depth) const
+int State::evalRows() const
 {
     int total = 0;
 
@@ -152,8 +152,8 @@ int State::evalRows(int depth) const
 		}
 	    }
 	    
-	    int points = segmentPoints(human,pc,depth);
-	    if(points <= -512 || points >= 512)
+	    int points = segmentPoints(human,pc);
+	    if(points == -512 || points == 512)
 		return points;
 	    
 	    total += points;
@@ -163,7 +163,7 @@ int State::evalRows(int depth) const
     return total;
 }
 
-int State::evalColumns(int depth) const
+int State::evalColumns() const
 {
     int total = 0;
 
@@ -185,8 +185,8 @@ int State::evalColumns(int depth) const
 		}
 	    }
 
-	    int points = segmentPoints(human,pc,depth);
-	    if(points <= -512 || points >= 512)
+	    int points = segmentPoints(human,pc);
+	    if(points == -512 || points == 512)
 		return points;
 
 	    total += points;
@@ -196,15 +196,15 @@ int State::evalColumns(int depth) const
     return total;
 }
 
-int State::evalDiagonals(int depth) const
+int State::evalDiagonals() const
 {
     int total = 0;
     
     // top-left to top-right
     for(int j=0; j<=(c-4); ++j)
     {
-	int points = runEvalDiagonal(0,j,1,1,depth);
-	if(points <= -512 || points >= 512)
+	int points = runEvalDiagonal(0,j,1,1);
+	if(points == -512 || points == 512)
 	    return points;
 
 	total += points;
@@ -213,8 +213,8 @@ int State::evalDiagonals(int depth) const
     // top-left to bottom-left
     for(int i=1; i<=(r-4); ++i)
     {
-	int points = runEvalDiagonal(i,0,1,1,depth);
-	if(points <= -512 || points >= 512)
+	int points = runEvalDiagonal(i,0,1,1);
+	if(points == -512 || points == 512)
 	    return points;
 
 	total += points;
@@ -223,8 +223,8 @@ int State::evalDiagonals(int depth) const
     // bottom-left to top-left
     for(int i=r-1; i>=3; --i)
     {
-	int points = runEvalDiagonal(i,0,-1,1,depth);
-	if(points <= -512 || points >= 512)
+	int points = runEvalDiagonal(i,0,-1,1);
+	if(points == -512 || points == 512)
 	    return points;
 	
 	total += points;
@@ -233,8 +233,8 @@ int State::evalDiagonals(int depth) const
     // bottom-left to bottom-right
     for(int j=1; j<=(c-4); ++j)
     {
-	int points = runEvalDiagonal(r-1,j,-1,1,depth);
-	if(points <= -512 || points >= 512)
+	int points = runEvalDiagonal(r-1,j,-1,1);
+	if(points == -512 || points == 512)
 	    return points;
 	
 	total += points;
@@ -243,7 +243,7 @@ int State::evalDiagonals(int depth) const
     return total;
 }
 
-int State::runEvalDiagonal(int x, int y, int dirX, int dirY, int depth) const
+int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 {
     int total = 0;
     int startx = x;
@@ -266,8 +266,8 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY, int depth) const
 	    y+=dirY;
 	}
 
-	int points = segmentPoints(human,pc,depth);
-	if(points <= -512 || points >= 512)
+	int points = segmentPoints(human,pc);
+	if(points == -512 || points == 512)
 	    return points;
 
 	total += points;
@@ -279,7 +279,7 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY, int depth) const
     return total;
 }
 
-int State::segmentPoints(int humanCount, int pcCount, int depth) const
+int State::segmentPoints(int humanCount, int pcCount) const
 {
     if(humanCount != 0 && pcCount != 0)
 	return 0;
@@ -287,13 +287,13 @@ int State::segmentPoints(int humanCount, int pcCount, int depth) const
     int sign = (humanCount == 0) ? 1 : -1;
 
     if(humanCount == 4 || pcCount == 4)
-	return (512+depth)*sign;
+	return 512*sign;
     else if (humanCount == 3 || pcCount == 3)
-	return 50*sign;
+	return  50*sign;
     else if (humanCount == 2 || pcCount == 2)
-	return 10*sign;
+	return  10*sign;
     else if (humanCount == 1 || pcCount == 1)
-	return  1*sign;
+	return   1*sign;
     else
 	return 0;
 }

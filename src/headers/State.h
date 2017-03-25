@@ -20,7 +20,7 @@ public:
     vector<State*> makeDescendants(int player) const;
     int isTerminal() const;
     bool isFull() const;
-    int eval(int depth) const;
+    int eval() const;
     void print() const;
     
     // TODO << SUPPORT
@@ -31,11 +31,11 @@ private:
     Column *board;
     int move;
     
-    int evalRows(int depth) const;
-    int evalColumns(int depth) const;
-    int evalDiagonals(int depth) const;
-    int runEvalDiagonal(int x, int y, int dirX, int dirY, int depth) const;
-    int segmentPoints(int humanCount, int pcCount, int depth) const;
+    int evalRows() const;
+    int evalColumns() const;
+    int evalDiagonals() const;
+    int runEvalDiagonal(int x, int y, int dirX, int dirY) const;
+    int segmentPoints(int humanCount, int pcCount) const;
 };
 
 #endif
