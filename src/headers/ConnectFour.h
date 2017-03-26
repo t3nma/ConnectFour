@@ -1,6 +1,7 @@
 #ifndef CONNECTFOUR_H
 #define CONNECTFOUR_H
 
+#include "Globals.h"
 #include "State.h"
 #include "AI.h"
 

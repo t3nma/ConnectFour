@@ -32,7 +32,7 @@ int AI::alfaBeta(State *state)
 NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 {
     NODE result(state->getUtility(),state->getMove());
-    if(state->getUtility() == -512 || state->isFull() || depth == depthBound)
+    if(state->getUtility() == MIN_UTILITY || state->isFull() || depth == depthBound)
 	return result;
     
     result.first = INT_MIN;
@@ -69,7 +69,7 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 NODE AI::minValue(State *state, int depth, int alfa, int beta)
 {
     NODE result(state->getUtility(),state->getMove());
-    if(state->getUtility() == 512 || state->isFull() || depth == depthBound)
+    if(state->getUtility() == MAX_UTILITY || state->isFull() || depth == depthBound)
 	return result;
    
     result.first = INT_MAX;

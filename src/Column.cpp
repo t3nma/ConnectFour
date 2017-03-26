@@ -49,7 +49,7 @@ bool Column::isFull() const
 void Column::placeCell(int player)
 {
     cells[top] = player;
-    if(player != 0)
+    if(player != BLANK)
 	top++;
 }
 

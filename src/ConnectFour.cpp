@@ -32,15 +32,15 @@ void ConnectFour::init()
     cin >> nCols;
 
     int algoOP;
-    cout << "Algorithm: (1-Minmax) (2-Alpha Beta) ";
+    cout << "Algorithm: (" << MINIMAX << "-Minimax) (" << ALFA_BETA << "-Alfa-Beta) ";
     cin >> algoOP;
 
     int playerOP;
-    cout << "First player: (1-Player) (2-AI) ";
+    cout << "First player: (" << HUMAN << "-Player) (" << BOT << "-AI) ";
     cin >> playerOP;
     
     state = new State(nRows,nCols);
-    bot = new AI((algoOP==1), 8);
+    bot = new AI((algoOP==MINIMAX), SETTINGS_DEPTH_LIMIT);
     curPlayer = playerOP;
 
     cout << endl;
@@ -52,9 +52,9 @@ void ConnectFour::start()
     state->print();
 
     int points = state->getUtility();
-    while( points != -512 && points != 512 && !state->isFull() )
+    while( points != MIN_UTILITY && points != MAX_UTILITY && !state->isFull() )
     {
-	if(curPlayer == 1)
+	if(curPlayer == HUMAN)
 	    humanTurn();
 	else
 	    botTurn();
@@ -63,7 +63,7 @@ void ConnectFour::start()
 	points = state->getUtility();
     }
 
-    if(points == -512 || points == 512)
+    if(points == MIN_UTILITY || points == MAX_UTILITY)
 	cout << ( (points > 0) ? "AI" : "You" ) << " WON!" << endl;
     else
     	cout << "It's a DRAW!" << endl;
@@ -82,12 +82,12 @@ void ConnectFour::humanTurn()
 	cin >> col;
     }
 
-    curPlayer = 2;
+    curPlayer = BOT;
 }
 
 void ConnectFour::botTurn()
 {
     cout << "AI turn..." << endl;
     state->play(curPlayer, bot->play(state));
-    curPlayer = 1;
+    curPlayer = HUMAN;
 }

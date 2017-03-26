@@ -1,5 +1,3 @@
-#include <iostream>
-#include <algorithm>
 #include "headers/State.h"
 
 State::State(int nRows, int nCols, int move)
@@ -62,7 +60,7 @@ bool State::play(int player, int column)
 	return false;
 
     board[column].placeCell(player);
-    eval();
+    eval(); // assign new evaluation
     return true;
 }
 
@@ -85,35 +83,34 @@ vector<State*> State::makeDescendants(int player) const
 	    descendants.push_back(s);
     }
 
-    sort(descendants.begin(), descendants.end(), CompareUtility(player==2));
+    sort(descendants.begin(), descendants.end(), CompareUtility(player==BOT));
     return descendants;
 }
   
 void State::eval()
 {
     int rows = evalRows();
-    if(rows == -512 || rows == 512)
+    if(rows == MIN_UTILITY || rows == MAX_UTILITY)
     {
 	utility = rows;
 	return;
     }
     
     int cols = evalColumns();
-    if(cols == -512 || cols == 512)
+    if(cols == MIN_UTILITY || cols == MAX_UTILITY)
     {
 	utility = cols;
 	return;
     }
     
     int diagonals = evalDiagonals();
-    if(diagonals == -512 || diagonals == 512)
+    if(diagonals == MIN_UTILITY || diagonals == MAX_UTILITY)
     {
 	utility = diagonals;
 	return;
     }
     
-    int bonus = 16;
-    utility = rows + cols + diagonals + bonus;
+    utility = rows + cols + diagonals + BONUS;
 }
 
 void State::print() const
@@ -156,9 +153,9 @@ int State::evalRows() const
 	    {
 		switch(board[k].getCell(i))
 		{
-		    case 1:
+		    case HUMAN:
 			human++; break;
-		    case 2:
+		    case BOT:
 			pc++; break;
 		    default:
 		        break;
@@ -166,7 +163,7 @@ int State::evalRows() const
 	    }
 	    
 	    int points = segmentPoints(human,pc);
-	    if(points == -512 || points == 512)
+	    if(points == MIN_UTILITY || points == MAX_UTILITY)
 		return points;
 	    
 	    total += points;
@@ -189,9 +186,9 @@ int State::evalColumns() const
 	    {
 		switch(board[j].getCell(k))
 		{
-		    case 1:
+		    case HUMAN:
 			human++; break;
-		    case 2:
+		    case BOT:
 			pc++; break;
 		    default:
 		        break;
@@ -199,7 +196,7 @@ int State::evalColumns() const
 	    }
 
 	    int points = segmentPoints(human,pc);
-	    if(points == -512 || points == 512)
+	    if(points == MIN_UTILITY || points == MAX_UTILITY)
 		return points;
 
 	    total += points;
@@ -217,7 +214,7 @@ int State::evalDiagonals() const
     for(int j=0; j<=(c-4); ++j)
     {
 	int points = runEvalDiagonal(0,j,1,1);
-	if(points == -512 || points == 512)
+	if(points == MIN_UTILITY || points == MAX_UTILITY)
 	    return points;
 
 	total += points;
@@ -227,7 +224,7 @@ int State::evalDiagonals() const
     for(int i=1; i<=(r-4); ++i)
     {
 	int points = runEvalDiagonal(i,0,1,1);
-	if(points == -512 || points == 512)
+	if(points == MIN_UTILITY || points == MAX_UTILITY)
 	    return points;
 
 	total += points;
@@ -237,7 +234,7 @@ int State::evalDiagonals() const
     for(int i=r-1; i>=3; --i)
     {
 	int points = runEvalDiagonal(i,0,-1,1);
-	if(points == -512 || points == 512)
+	if(points == MIN_UTILITY || points == MAX_UTILITY)
 	    return points;
 	
 	total += points;
@@ -247,7 +244,7 @@ int State::evalDiagonals() const
     for(int j=1; j<=(c-4); ++j)
     {
 	int points = runEvalDiagonal(r-1,j,-1,1);
-	if(points == -512 || points == 512)
+	if(points == MIN_UTILITY || points == MAX_UTILITY)
 	    return points;
 	
 	total += points;
@@ -270,9 +267,12 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 	    int normX = (r-1)-x;
 	    switch(board[y].getCell(normX))
 	    {
-	        case 1:  human++; break;
-	        case 2:  pc++; break;
-	        default: break;
+	        case HUMAN:
+		    human++; break;
+	        case BOT:
+		    pc++; break;
+	        default:
+		    break;
 	    }
 	    
 	    x+=dirX;
@@ -280,7 +280,7 @@ int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
 	}
 
 	int points = segmentPoints(human,pc);
-	if(points == -512 || points == 512)
+	if(points == MIN_UTILITY || points == MAX_UTILITY)
 	    return points;
 
 	total += points;
@@ -300,13 +300,13 @@ int State::segmentPoints(int humanCount, int pcCount) const
     int sign = (humanCount == 0) ? 1 : -1;
 
     if(humanCount == 4 || pcCount == 4)
-	return 512*sign;
+	return MAX_UTILITY*sign;
     else if (humanCount == 3 || pcCount == 3)
-	return  50*sign;
+	return COUNT_3_POINTS*sign;
     else if (humanCount == 2 || pcCount == 2)
-	return  10*sign;
+	return COUNT_2_POINTS*sign;
     else if (humanCount == 1 || pcCount == 1)
-	return   1*sign;
+	return COUNT_1_POINTS*sign;
     else
 	return 0;
 }

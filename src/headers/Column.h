@@ -1,6 +1,8 @@
 #ifndef COLUMN_H
 #define COLUMN_H
 
+#include "Globals.h"
+
 class Column
 {
 public:

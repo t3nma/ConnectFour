@@ -1,8 +1,11 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <vector>
+#include "Globals.h"
 #include "Column.h"
+#include <vector>
+#include <iostream>
+#include <algorithm>
 using namespace std;
 
 class State
@@ -44,7 +47,7 @@ class CompareUtility
 {   
 public:
 
-    CompareUtility(const bool& reverse=false)
+    CompareUtility(const bool& reverse)
 	: reverse(reverse)
     {
     }
@@ -55,7 +58,6 @@ public:
 	    return(lhs->getUtility() > rhs->getUtility());
 	else
 	    return(lhs->getUtility() < rhs->getUtility());
-	  
     }
     
 private:
