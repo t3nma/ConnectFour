@@ -6,6 +6,8 @@
 #define AI_H
 
 #define NODE pair<int,int>
+#define HUMAN 1
+#define BOT 2
 
 #include "State.h"
 #include <utility>

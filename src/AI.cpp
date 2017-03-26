@@ -13,7 +13,7 @@ int AI::play(State *state)
     performance.time();
 
     cout << "Action: " << action << endl;
-    cout << setprecision(2) << "Time spent: " << performance.elapsedTime << "s" << endl;
+    cout << setprecision(3) << "Time spent: " << performance.elapsedTime << "s" << endl;
     cout << "Expanded nodes: " << performance.expandedNodes << endl;
     
     return action;
@@ -35,12 +35,12 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta)
     if(state->isFull() || depth == depthBound)
 	return result;
 
-    result = checkForOptimalTerm(state,2);
+    result = checkForOptimalTerm(state,BOT);
     if(result.first != -1)
-	return result;
+    	return result;
     
     result.first = INT_MIN;
-    vector<State*> childs = state->makeDescendants(2);
+    vector<State*> childs = state->makeDescendants(BOT);
     performance.expandedNodes += (int)childs.size();    
     
     for(auto it=childs.begin(); it!=childs.end(); ++it)
@@ -76,12 +76,12 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta)
     if(state->isFull() || depth == depthBound)
 	return result;
 
-    result = checkForOptimalTerm(state,1);
+    result = checkForOptimalTerm(state,HUMAN);
     if(result.first != -1)
-	return result;
+    	return result;
     
     result.first = INT_MAX;
-    vector<State*> childs = state->makeDescendants(1);
+    vector<State*> childs = state->makeDescendants(HUMAN);
     performance.expandedNodes += (int)childs.size();
     
     for(auto it=childs.begin(); it!=childs.end(); ++it)
@@ -124,14 +124,14 @@ NODE AI::checkForOptimalTerm(State *state, int player)
 	if(!foundTerm)
 	{
 	    int points = (*it)->eval();
-	    if(points == -512 || points == 512 || (*it)->isFull())
+	    if( (player == HUMAN && points == -512) || (player == BOT && points == 512) )
 	    {
 		result.first = points;
 		result.second = (*it)->getMove();
 		foundTerm = true;
 	    }
 	}
-
+	    
 	delete (*it);
     }
 
