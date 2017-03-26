@@ -1,11 +1,13 @@
 #include <iostream>
+#include <algorithm>
 #include "headers/State.h"
 
 State::State(int nRows, int nCols, int move)
     : r(nRows),
       c(nCols),
       board(new Column[c]),
-      move(move)
+      move(move),
+      utility(0)
 {
     for(int i=0; i<c; ++i)
 	board[i].init(r);
@@ -15,7 +17,8 @@ State::State(const State& s)
     : r(s.r),
       c(s.c),
       board(new Column[c]),
-      move(s.move)
+      move(s.move),
+      utility(0)
 {
     for(int i=0; i<c; ++i)
 	board[i] = s.board[i];
@@ -26,6 +29,7 @@ State& State::operator=(const State& s)
     r = s.r;
     c = s.c;
     move = s.move;
+    utility = s.utility;
     
     delete [] board;
 
@@ -58,6 +62,7 @@ bool State::play(int player, int column)
 	return false;
 
     board[column].placeCell(player);
+    eval();
     return true;
 }
 
@@ -70,9 +75,8 @@ vector<State*> State::makeDescendants(int player) const
 	State *s = new State(*this);
 	bool changed = false;
 	
-	if(!s->board[i].isFull())
+	if(s->play(player,i))
 	{
-	    s->board[i].placeCell(player);
 	    s->setMove(i);
 	    changed = true;
 	}
@@ -81,26 +85,35 @@ vector<State*> State::makeDescendants(int player) const
 	    descendants.push_back(s);
     }
 
+    sort(descendants.begin(), descendants.end(), CompareUtility(player==2));
     return descendants;
 }
   
-int State::eval() const
+void State::eval()
 {
     int rows = evalRows();
     if(rows == -512 || rows == 512)
-	return rows;
+    {
+	utility = rows;
+	return;
+    }
     
     int cols = evalColumns();
     if(cols == -512 || cols == 512)
-	return cols;
+    {
+	utility = cols;
+	return;
+    }
     
     int diagonals = evalDiagonals();
     if(diagonals == -512 || diagonals == 512)
-	return diagonals;
-
-    int bonus = 16;
+    {
+	utility = diagonals;
+	return;
+    }
     
-    return rows + cols + diagonals + bonus;
+    int bonus = 16;
+    utility = rows + cols + diagonals + bonus;
 }
 
 void State::print() const
@@ -296,4 +309,9 @@ int State::segmentPoints(int humanCount, int pcCount) const
 	return   1*sign;
     else
 	return 0;
+}
+
+int State::getUtility() const
+{
+    return utility;
 }

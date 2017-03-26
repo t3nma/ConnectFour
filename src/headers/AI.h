@@ -58,7 +58,6 @@ private:
 
     NODE maxValue(State *state, int depth, int alfa=0, int beta=0);
     NODE minValue(State *state, int depth, int alfa=0, int beta=0);
-    NODE checkForOptimalTerm(State *state, int player);
 };
 
 #endif

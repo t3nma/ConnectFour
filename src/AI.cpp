@@ -31,13 +31,9 @@ int AI::alfaBeta(State *state)
 
 NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 {
-    NODE result(state->eval(),state->getMove());
-    if(state->isFull() || depth == depthBound)
+    NODE result(state->getUtility(),state->getMove());
+    if(state->getUtility() == -512 || state->isFull() || depth == depthBound)
 	return result;
-
-    result = checkForOptimalTerm(state,BOT);
-    if(result.first != -1)
-    	return result;
     
     result.first = INT_MIN;
     vector<State*> childs = state->makeDescendants(BOT);
@@ -72,14 +68,10 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 
 NODE AI::minValue(State *state, int depth, int alfa, int beta)
 {
-    NODE result(state->eval(),state->getMove());
-    if(state->isFull() || depth == depthBound)
+    NODE result(state->getUtility(),state->getMove());
+    if(state->getUtility() == 512 || state->isFull() || depth == depthBound)
 	return result;
-
-    result = checkForOptimalTerm(state,HUMAN);
-    if(result.first != -1)
-    	return result;
-    
+   
     result.first = INT_MAX;
     vector<State*> childs = state->makeDescendants(HUMAN);
     performance.expandedNodes += (int)childs.size();
@@ -106,33 +98,6 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta)
 	}
 
 	delete (*it); // free state*
-    }
-
-    return result;
-}
-
-NODE AI::checkForOptimalTerm(State *state, int player)
-{
-    NODE result(-1,-1);
-    bool foundTerm = false;
-
-    vector<State*> childs = state->makeDescendants(player);
-    performance.expandedNodes += (int)childs.size();
-
-    for(auto it=childs.begin(); it!=childs.end(); ++it)
-    {
-	if(!foundTerm)
-	{
-	    int points = (*it)->eval();
-	    if( (player == HUMAN && points == -512) || (player == BOT && points == 512) )
-	    {
-		result.first = points;
-		result.second = (*it)->getMove();
-		foundTerm = true;
-	    }
-	}
-	    
-	delete (*it);
     }
 
     return result;

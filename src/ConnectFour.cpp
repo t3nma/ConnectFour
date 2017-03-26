@@ -40,7 +40,7 @@ void ConnectFour::init()
     cin >> playerOP;
     
     state = new State(nRows,nCols);
-    bot = new AI(((algoOP == 1) ? true : false), 8);
+    bot = new AI(((algoOP == 1) ? true : false), 12);
     curPlayer = playerOP;
 
     cout << endl;
@@ -50,9 +50,9 @@ void ConnectFour::start()
 {
     cout << "Initial State:";
     state->print();
-    
-    int points = state->eval();
-    while( points != 512 && points != -512 && !state->isFull() )
+
+    int points = state->getUtility();
+    while( points != -512 && points != 512 && !state->isFull() )
     {
 	if(curPlayer == 1)
 	    humanTurn();
@@ -60,7 +60,7 @@ void ConnectFour::start()
 	    botTurn();
 
 	state->print();
-	points = state->eval();
+	points = state->getUtility();
     }
 
     if(points == -512 || points == 512)
