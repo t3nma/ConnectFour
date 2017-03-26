@@ -40,7 +40,7 @@ void ConnectFour::init()
     cin >> playerOP;
     
     state = new State(nRows,nCols);
-    bot = new AI(((algoOP == 1) ? true : false), 12);
+    bot = new AI((algoOP==1), 8);
     curPlayer = playerOP;
 
     cout << endl;
