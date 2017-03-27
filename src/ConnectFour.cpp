@@ -59,8 +59,20 @@ void ConnectFour::init()
 
 	cout << "Algorithm: (" << MINIMAX << " - Minimax) (" << ALFA_BETA << " - Alfa-Beta) ";
 	cin >> algoOP;
-    }	
+    }
 
+    int depth;
+    cout << "Depth: (we recommend 7 for Minimax and 12 for Alpha-Beta) ";
+    cin >> depth;
+
+    while(depth <= 0)
+    {
+	cout << "Invalid depth!" << endl;
+	
+	cout << "Depth: (we recommend 7 for Minimax and 12 for Alpha-Beta) ";
+	cin >> depth;
+    }
+    
     int playerOP;
     cout << "First player: (" << HUMAN << " - Player) (" << BOT << " - AI) ";
     cin >> playerOP;
@@ -75,7 +87,7 @@ void ConnectFour::init()
 
     // initialize game with user prompt
     state = new State(nRows,nCols);
-    bot = new AI((algoOP==MINIMAX), SETTINGS_DEPTH_LIMIT);
+    bot = new AI((algoOP==MINIMAX),depth);
     curPlayer = playerOP;
 
     cout << endl;
