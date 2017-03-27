@@ -1,7 +1,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define SETTINGS_DEPTH_LIMIT 8
+#define SETTINGS_DEPTH_LIMIT 7
 
 #define MINIMAX 1
 #define ALFA_BETA 2

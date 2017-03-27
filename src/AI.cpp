@@ -1,15 +1,18 @@
 #include "headers/AI.h"
 
-AI::AI(bool useMinmax, int depthBound)
-    : useMinmax(useMinmax),
+// default constructor
+AI::AI(bool useMinimax, int depthBound)
+    : useMinimax(useMinimax),
       depthBound(depthBound)
 {
 }
 
+// initialize performance checker and
+// start minimax or alpha-Beta to get and return the AI play
 int AI::play(State *state)
 {
     performance.init();
-    int action = useMinmax ? minmax(state) : alfaBeta(state);
+    int action = useMinimax ? minimax(state) : alphaBeta(state);
     performance.time();
 
     cout << "Action: " << action << endl;
@@ -19,12 +22,12 @@ int AI::play(State *state)
     return action;
 }
 
-int AI::minmax(State *state)
+int AI::minimax(State *state)
 {
     return maxValue(state,0).second;
 }
 
-int AI::alfaBeta(State *state)
+int AI::alphaBeta(State *state)
 {
     return maxValue(state,0,INT_MIN,INT_MAX).second;
 }
@@ -50,17 +53,18 @@ NODE AI::maxValue(State *state, int depth, int alfa, int beta)
 	}
 
 	// alfa-beta 
-	if(!useMinmax)
+	if(!useMinimax)
 	{
 	    if(tmp.first >= beta)
 	    {
 		for(; it!=childs.end(); ++it) delete (*it);
 		return result;
 	    }
+
 	    alfa = max(alfa, tmp.first);
 	}
 
-	delete (*it); // free state*
+	delete (*it);
     }
     
     return result;
@@ -87,17 +91,18 @@ NODE AI::minValue(State *state, int depth, int alfa, int beta)
 	}
 
 	// alfa-beta
-	if(!useMinmax)
+	if(!useMinimax)
 	{
 	    if(tmp.first <= alfa)
 	    {
 		for(; it!=childs.end(); ++it) delete (*it);
 		return result;
 	    }
+
 	    beta = min(beta, tmp.first);
 	}
 
-	delete (*it); // free state*
+	delete (*it);
     }
 
     return result;

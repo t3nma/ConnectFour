@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// default constructor
 ConnectFour::ConnectFour()
     : state(nullptr),
       bot(nullptr)
@@ -12,6 +13,7 @@ ConnectFour::ConnectFour()
     srand(time(NULL));
 }
 
+// destructor
 ConnectFour::~ConnectFour()
 {
     if(state != nullptr)
@@ -21,24 +23,57 @@ ConnectFour::~ConnectFour()
 	delete bot;
 }
 
+// prompt user for the game configuration
+// and initialize the required data-members
 void ConnectFour::init()
 {
     int nRows;
     cout << "Number of Rows: ";
     cin >> nRows;
 
+    while(nRows <= 0)
+    {
+	cout << "Invalid size!" << endl << "Number of Rows: ";
+	cin >> nRows;
+    }
+
+    bool anyColSize = (nRows >= 4);
+
     int nCols;
-    cout << "Number of Columns: ";
+    cout << "Number of Columns" << (anyColSize ? " : " : " (min 4): ");
     cin >> nCols;
 
+    while( (anyColSize && nCols <= 0) || (!anyColSize && nCols < 4) )
+    {
+	cout << "Invalid size!" << endl << "Number of Columns" << (anyColSize ? ": " : "(min 4): ");
+	cin >> nCols;
+    }
+
     int algoOP;
-    cout << "Algorithm: (" << MINIMAX << "-Minimax) (" << ALFA_BETA << "-Alfa-Beta) ";
+    cout << "Algorithm: (" << MINIMAX << " - Minimax) (" << ALFA_BETA << " - Alfa-Beta) ";
     cin >> algoOP;
 
+    while(algoOP != MINIMAX && algoOP != ALFA_BETA)
+    {
+	cout << "Invalid Algorithm!" << endl;
+
+	cout << "Algorithm: (" << MINIMAX << " - Minimax) (" << ALFA_BETA << " - Alfa-Beta) ";
+	cin >> algoOP;
+    }	
+
     int playerOP;
-    cout << "First player: (" << HUMAN << "-Player) (" << BOT << "-AI) ";
+    cout << "First player: (" << HUMAN << " - Player) (" << BOT << " - AI) ";
     cin >> playerOP;
-    
+
+    while(playerOP != HUMAN && playerOP != BOT)
+    {
+	cout << "Invalid First player!" << endl;
+	
+	cout << "First player: (" << HUMAN << " - Player) (" << BOT << " - AI) ";
+	cin >> playerOP;
+    }
+
+    // initialize game with user prompt
     state = new State(nRows,nCols);
     bot = new AI((algoOP==MINIMAX), SETTINGS_DEPTH_LIMIT);
     curPlayer = playerOP;
@@ -46,6 +81,7 @@ void ConnectFour::init()
     cout << endl;
 }
 
+// game life-cycle
 void ConnectFour::start()
 {
     cout << "Initial State:";
@@ -87,7 +123,7 @@ void ConnectFour::humanTurn()
 
 void ConnectFour::botTurn()
 {
-    cout << "AI turn..." << endl;
+    cout << "AI's turn..." << endl;
     state->play(curPlayer, bot->play(state));
     curPlayer = HUMAN;
 }

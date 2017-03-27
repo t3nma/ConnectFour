@@ -1,11 +1,13 @@
 #include "headers/Column.h"
 #include <iostream>
 
+// default constructor
 Column::Column()
     : cells(nullptr)
 {
 }
 
+// initialize column with r cells
 void Column::init(int r)
 {
     this->r = r;
@@ -13,6 +15,7 @@ void Column::init(int r)
     cells = new int[r];
 }
 
+// copy constructor
 Column::Column(const Column& c)
     : r(c.r),
       top(c.top)
@@ -22,6 +25,7 @@ Column::Column(const Column& c)
 	cells[i] = c.cells[i];
 }
 
+// equality support
 Column& Column::operator=(const Column& c)
 {
     if(cells != nullptr)
@@ -36,6 +40,7 @@ Column& Column::operator=(const Column& c)
     return *this;
 }
 
+// destructor
 Column::~Column()
 {
     delete [] cells;

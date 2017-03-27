@@ -43,17 +43,17 @@ private:
 class AI
 {
 public:
-    AI(bool useMinmax, int depthBound);
+    AI(bool useMinimax, int depthBound);
 
     int play(State *state);
 
 private:
-    bool useMinmax;
+    bool useMinimax;
     int depthBound;
     Performance performance;
     
-    int minmax(State *state);
-    int alfaBeta(State *state);
+    int minimax(State *state);
+    int alphaBeta(State *state);
 
     NODE maxValue(State *state, int depth, int alfa=0, int beta=0);
     NODE minValue(State *state, int depth, int alfa=0, int beta=0);

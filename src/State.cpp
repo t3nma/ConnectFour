@@ -1,5 +1,6 @@
 #include "headers/State.h"
 
+// default constructor
 State::State(int nRows, int nCols, int move)
     : r(nRows),
       c(nCols),
@@ -11,6 +12,7 @@ State::State(int nRows, int nCols, int move)
 	board[i].init(r);
 }
 
+// copy constructor
 State::State(const State& s)
     : r(s.r),
       c(s.c),
@@ -22,6 +24,7 @@ State::State(const State& s)
 	board[i] = s.board[i];
 }
 
+// equality support
 State& State::operator=(const State& s)
 {
     r = s.r;
@@ -38,6 +41,7 @@ State& State::operator=(const State& s)
     return *this;
 }
 
+// destructor
 State::~State()
 {
     if(board != nullptr)
@@ -64,6 +68,10 @@ bool State::play(int player, int column)
     return true;
 }
 
+// sucessor function.
+// the sucessor list is sorted for MAX and MIN
+// in order to provide the best check order for
+// the alpha-beta algorithm
 vector<State*> State::makeDescendants(int player) const
 {
     vector<State*> descendants;
@@ -86,31 +94,36 @@ vector<State*> State::makeDescendants(int player) const
     sort(descendants.begin(), descendants.end(), CompareUtility(player==BOT));
     return descendants;
 }
-  
+
+// utility + evaluation combined function
 void State::eval()
 {
-    int rows = evalRows();
-    if(rows == MIN_UTILITY || rows == MAX_UTILITY)
-    {
-	utility = rows;
-	return;
-    }
-    
-    int cols = evalColumns();
-    if(cols == MIN_UTILITY || cols == MAX_UTILITY)
-    {
-	utility = cols;
-	return;
-    }
-    
-    int diagonals = evalDiagonals();
-    if(diagonals == MIN_UTILITY || diagonals == MAX_UTILITY)
-    {
-	utility = diagonals;
-	return;
-    }
-    
-    utility = rows + cols + diagonals + BONUS;
+    utility = 0;
+
+    for(int i=r-1; i>=0; --i)
+	for(int j=0; j<c; ++j)
+	{
+	    // row
+	    if( j<=(c-4) && testPoints(runEval(i,j,0,1)) )
+		return;
+
+	    // column
+	    if( i<=(r-4) && testPoints(runEval(i,j,1,0)) )
+		return;
+
+	    if(j<=(c-4))
+	    {
+		// diagonal south-east
+		if( i<=(r-4) && testPoints(runEval(i,j,1,1)) )
+		    return;
+	    
+		// diagonal north-east
+		if( i>=3 && testPoints(runEval(i,j,-1,1)) )
+		    return;
+	    }
+	}
+
+    utility += BONUS;
 }
 
 void State::print() const
@@ -140,156 +153,26 @@ bool State::isFull() const
     return true;
 }
 
-int State::evalRows() const
+int State::runEval(int x, int y, int dirX, int dirY) const
 {
-    int total = 0;
-
-    for(int i=0; i<r; ++i)
+    int human=0, bot=0;
+    for (int i=0; i<4; i++)
     {
-        for (int j=0; j<=(c-4); ++j)
+	switch(board[y].getCell(x))
 	{
-	    int human=0, pc=0;
-	    for(int k=j; k<(j+4); ++k) 
-	    {
-		switch(board[k].getCell(i))
-		{
-		    case HUMAN:
-			human++; break;
-		    case BOT:
-			pc++; break;
-		    default:
-		        break;
-		}
-	    }
-	    
-	    int points = segmentPoints(human,pc);
-	    if(points == MIN_UTILITY || points == MAX_UTILITY)
-		return points;
-	    
-	    total += points;
-	}
-    }
-    
-    return total;
-}
-
-int State::evalColumns() const
-{
-    int total = 0;
-
-    for(int j=0; j<c; ++j)
-    {
-	for (int i=0; i<=(r-4); ++i)
-	{
-	    int human=0, pc=0;
-	    for(int k=i; k<(i+4); ++k) 
-	    {
-		switch(board[j].getCell(k))
-		{
-		    case HUMAN:
-			human++; break;
-		    case BOT:
-			pc++; break;
-		    default:
-		        break;
-		}
-	    }
-
-	    int points = segmentPoints(human,pc);
-	    if(points == MIN_UTILITY || points == MAX_UTILITY)
-		return points;
-
-	    total += points;
-	}
-    }
-    
-    return total;
-}
-
-int State::evalDiagonals() const
-{
-    int total = 0;
-    
-    // top-left to top-right
-    for(int j=0; j<=(c-4); ++j)
-    {
-	int points = runEvalDiagonal(0,j,1,1);
-	if(points == MIN_UTILITY || points == MAX_UTILITY)
-	    return points;
-
-	total += points;
-    }
-    
-    // top-left to bottom-left
-    for(int i=1; i<=(r-4); ++i)
-    {
-	int points = runEvalDiagonal(i,0,1,1);
-	if(points == MIN_UTILITY || points == MAX_UTILITY)
-	    return points;
-
-	total += points;
-    }
-    
-    // bottom-left to top-left
-    for(int i=r-1; i>=3; --i)
-    {
-	int points = runEvalDiagonal(i,0,-1,1);
-	if(points == MIN_UTILITY || points == MAX_UTILITY)
-	    return points;
-	
-	total += points;
-    }
-    
-    // bottom-left to bottom-right
-    for(int j=1; j<=(c-4); ++j)
-    {
-	int points = runEvalDiagonal(r-1,j,-1,1);
-	if(points == MIN_UTILITY || points == MAX_UTILITY)
-	    return points;
-	
-	total += points;
-    }
-    
-    return total;
-}
-
-int State::runEvalDiagonal(int x, int y, int dirX, int dirY) const
-{
-    int total = 0;
-    int startx = x;
-    int starty = y;
-
-    while( ((dirX==1 && x<=(r-4)) || (dirX==-1 && x>=3)) && y<=(c-4) )
-    {	
-	int human=0, pc=0;
-	for (int i=0; i<4; i++)
-       	{
-	    int normX = (r-1)-x;
-	    switch(board[y].getCell(normX))
-	    {
-	        case HUMAN:
-		    human++; break;
-	        case BOT:
-		    pc++; break;
-	        default:
-		    break;
-	    }
-	    
-	    x+=dirX;
-	    y+=dirY;
+	    case HUMAN:
+		human++; break;
+	    case BOT:
+		bot++; break;
+	    default:
+		break;
 	}
 
-	int points = segmentPoints(human,pc);
-	if(points == MIN_UTILITY || points == MAX_UTILITY)
-	    return points;
-
-	total += points;
-	      
-	startx += dirX; x = startx;
-	starty += dirY; y = starty;
+	x += dirX;
+	y += dirY;
     }
 
-    return total;
+    return segmentPoints(human,bot);
 }
 
 int State::segmentPoints(int humanCount, int pcCount) const
@@ -309,6 +192,18 @@ int State::segmentPoints(int humanCount, int pcCount) const
 	return COUNT_1_POINTS*sign;
     else
 	return 0;
+}
+
+bool State::testPoints(int points)
+{
+    if(points == MIN_UTILITY || points == MAX_UTILITY)
+    {
+	utility = points;
+	return true;
+    }
+
+    utility += points;
+    return false;
 }
 
 int State::getUtility() const

@@ -35,14 +35,15 @@ private:
     int move;
     int utility;
 
-    void eval();
-    int evalRows() const;
-    int evalColumns() const;
-    int evalDiagonals() const;
-    int runEvalDiagonal(int x, int y, int dirX, int dirY) const;
+    void eval(); 
+    int runEval(int x, int y, int dirX, int dirY) const;
     int segmentPoints(int humanCount, int pcCount) const;
+    bool testPoints(int points);
 };
 
+// The sucessor function comparator.
+// The order is ascendent for MAX sucessors and
+// descendent for MIN.
 class CompareUtility
 {   
 public:
